@@ -8,11 +8,11 @@ class Board :
 
     def getCase(self, x, y):
         """
-        docstring here
+        Get a case of a board at a position (x, y)
             :param self: The board itself
             :param x: The horizontal position of a case
             :param y: The vertical position of a case
-            :return: 
+            :return: The value of a case
         """
         return self.grid[y, x]
 
@@ -47,10 +47,18 @@ class Board :
 
 
     def getSizeX(self):
+        """
+        Get the horizontal size of the board
+            :param self: The board itself
+        """   
         return self.grid.shape[1]
 
 
     def getSizeY(self):
+        """
+        Get the vertical size of the board
+            :param self: The board itself
+        """   
         return self.grid.shape[0]
 
 
