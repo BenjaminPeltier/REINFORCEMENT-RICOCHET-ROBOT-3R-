@@ -2,10 +2,8 @@ import numpy as np
 
 class Board :
 
-    grid = np.zeros((16, 16))
-
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, xDim, yDim):
+        self.grid = np.zeros((yDim, xDim))
 
 
     def getCase(self, x, y):
