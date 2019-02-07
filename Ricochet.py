@@ -16,18 +16,17 @@ class Ricochet :
         2048: "YellowWin"
     }
 
-    grid = Board()
 
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, xDim=16, yDim=16):
+        self.grid = Board(xDim, yDim)
 
 
     def _caseTransform(self, x, y):
         """
-        docstring here
-            :param self: 
-            :param x: 
-            :param y: 
+        Can transform a case into a dictionnary
+            :param self: The game itself
+            :param x: The horizontal position in the board
+            :param y: The vertical position in the board
         """
         caseDescr = {
             "LeftWall": 0, 
@@ -57,8 +56,8 @@ class Ricochet :
 
     def isWin(self):
         """
-        docstring here
-            :param self: 
+        True if the player winned, else : false
+            :param self: The game itself
         """   
         for x in range(self.grid.getSizeX()):
             for y in range(self.grid.getSizeY()):
@@ -72,3 +71,13 @@ class Ricochet :
                 elif caseInfos["Yellow"] and caseInfos["YellowWin"]:
                     return True
         return False
+
+
+    def move(self, color, direction):
+        """
+        Can move a color token following the rules of ricochet
+            :param self: The game itself
+            :param color: The color of the token
+            :param direction: The movement direction
+        """   
+        pass
