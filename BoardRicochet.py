@@ -31,14 +31,14 @@ class BoardRicochet(Board):
         """
         caseDescr = []
         prev = 0
-        current = self.grid.getCase(x, y)
+        current = super().getCase(x, y)
         i = 2048
-        while i >= 1 or current == 0:
+        while i >= 1 and current >= 0:
             prev = current
             current %= i
             if current != prev:
                 caseDescr.append(self._conversion[i])
-            i // 2
+            i = i // 2
         return caseDescr
 
 
@@ -81,10 +81,10 @@ class BoardRicochet(Board):
             :param y: The vertical position of a case
             :param *elements: The elements to remove of the case
         """   
-        case = self.grid.getCase(x, y)
+        case = self.getCase(x, y)
         for element in elements:
             case.remove(element)
-        self.grid._setCase(x, y, case)
+        self._setCase(x, y, case)
 
     
     def addElements(self, x, y, *elements):
@@ -95,10 +95,10 @@ class BoardRicochet(Board):
             :param y: The vertical position of a case
             :param *elements: The elements to add in the case
         """   
-        case = self.grid.getCase(x, y)
+        case = self.getCase(x, y)
         for element in elements:
-            case.add(element)
-        self.grid._setCase(x, y, case)
+            case.append(element)
+        self._setCase(x, y, case)
 
 
     def findColor(self, color):
@@ -108,9 +108,9 @@ class BoardRicochet(Board):
             :param color: The color of the token (string)
             :return: A tuple containing the position of the token
         """
-        for x in range(self.grid.getSizeX()):
-            for y in range(self.grid.getSizeY()):
-                for cat, nb in self.getCase(x, y):
-                    if nb and cat==color:
+        for x in range(self.getSizeX()):
+            for y in range(self.getSizeY()):
+                for cat in self.getCase(x, y):
+                    if cat==color:
                         return (x, y)
         raise Exception("The token of the desired color doesn't exist")

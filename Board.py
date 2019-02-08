@@ -6,12 +6,12 @@ class Board :
         self.grid = np.zeros((yDim, xDim))
 
 
-    def loadGrid(self):
+    def loadGrid(self, gridFile):
         """
         Load the board grid from a csv
             :param self: The board itself
         """   
-        self.grid = np.loadtxt(open("test.csv", "rb"), delimiter=",")
+        self.grid = np.loadtxt(open(gridFile, "rb"), delimiter=",")
 
 
     def getCase(self, x, y):
@@ -76,9 +76,9 @@ class Board :
             :param self: The board itself
             :return: A numpy array
         """
-        return self.grid.reshape(
+        return str(self.grid.reshape(
             (self.grid.shape[0] * self.grid.shape[1])
-        )
+        ))
 
 
     def __str__(self):

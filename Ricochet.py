@@ -46,8 +46,8 @@ class Ricochet :
             )
         self.grid.delElements(*tockenPos, color)
         self.grid.addElements(
-            tockenPos[0] + (nbMoves+1)*vec[0], 
-            tockenPos[1] + (nbMoves+1)*vec[1],
+            tockenPos[0] + (nbMoves)*vec[0], 
+            tockenPos[1] + (nbMoves)*vec[1],
             color
         )
 
@@ -57,7 +57,7 @@ class Ricochet :
         Can move a color token following the rules of ricochet
             :param self: The game itself
             :param color: The color of the token
-            :param direction: The movement direction
+            :param direction: The movement direction ("left", "right", "up", "low")
         """   
         if direction == "left":
             self._move(color, (-1, 0), ["LeftWall", "RightWall"])
