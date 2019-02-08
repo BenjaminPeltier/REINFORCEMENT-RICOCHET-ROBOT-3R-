@@ -1,57 +1,9 @@
-from Board import Board 
+from BoardRicochet import BoardRicochet
 
 class Ricochet :
-    _conversion = {
-        1: "LeftWall",
-        2: "RightWall",
-        4: "UpWall",
-        8: "DownWall",
-        16: "Red",
-        32: "Blue",
-        64: "Green",
-        128: "Yellow",
-        256: "RedWin",
-        512: "BlueWin",
-        1024: "GreenWin",
-        2048: "YellowWin"
-    }
-
-
+    
     def __init__(self, xDim=16, yDim=16):
-        self.grid = Board(xDim, yDim)
-
-
-    def _caseTransform(self, x, y):
-        """
-        Can transform a case into a dictionnary
-            :param self: The game itself
-            :param x: The horizontal position in the board
-            :param y: The vertical position in the board
-        """
-        caseDescr = {
-            "LeftWall": 0, 
-            "RightWall": 0, 
-            "UpWall": 0, 
-            "DownWall": 0, 
-            "Red": 0,
-            "Blue": 0,
-            "Green": 0,
-            "Yellow": 0,
-            "RedWin": 0,
-            "BlueWin": 0,
-            "GreenWin": 0,
-            "YellowWin": 0,
-        }
-        prev = 0
-        current = self.grid.getCase(x, y)
-        i = 2048
-        while i >= 1 or current == 0:
-            prev = current
-            current %= i
-            if current != prev:
-                caseDescr[self._conversion[i]] = (prev // i)
-            i // 2
-        return caseDescr
+        self.grid = BoardRicochet(xDim, yDim)
 
 
     def isWin(self):
@@ -61,16 +13,43 @@ class Ricochet :
         """   
         for x in range(self.grid.getSizeX()):
             for y in range(self.grid.getSizeY()):
-                caseInfos = self._caseTransform(x, y)
-                if caseInfos["Red"] and caseInfos["RedWin"]:
+                case = self.grid.getCase(x, y)
+                if "Red" in case and "RedWin" in case:
                     return True
-                elif caseInfos["Blue"] and caseInfos["BlueWin"]:
+                elif "Blue" in case and "BlueWin" in case:
                     return True
-                elif caseInfos["Green"] and caseInfos["GreenWin"]:
+                elif "Green" in case and "GreenWin" in case:
                     return True
-                elif caseInfos["Yellow"] and caseInfos["YellowWin"]:
+                elif "Yellow" in case and "YellowWin" in case:
                     return True
         return False
+
+
+    def _move(self, color, vec, blockingWalls):
+        """
+        Can move a color token following the rules of ricochet in the direction describes by vec
+            :param self: The game itself
+            :param color: The color of the token
+            :param vec: A tuple of shape (movingX, movingY)
+            :param blockingWalls: A tuple of shape (blocking wall current case, blocking wall adjacent case)
+        """   
+        tockenPos = self.grid.findColor(color)
+        currentCase = self.grid.getCase(*tockenPos)
+        adjCase = self.grid.getCase(tockenPos[0] + vec[0], tockenPos[1] + vec[1])
+        nbMoves = 0
+        while blockingWalls[0] not in currentCase and blockingWalls[1] not in adjCase:
+            currentCase = adjCase
+            nbMoves += 1
+            adjCase = self.grid.getCase(
+                tockenPos[0] + (nbMoves+1)*vec[0], 
+                tockenPos[1] + (nbMoves+1)*vec[1]
+            )
+        self.grid.delElements(*tockenPos, color)
+        self.grid.addElements(
+            tockenPos[0] + (nbMoves+1)*vec[0], 
+            tockenPos[1] + (nbMoves+1)*vec[1],
+            color
+        )
 
 
     def move(self, color, direction):
@@ -80,4 +59,13 @@ class Ricochet :
             :param color: The color of the token
             :param direction: The movement direction
         """   
-        pass
+        if direction == "left":
+            self._move(color, (-1, 0), ["LeftWall", "RightWall"])
+        elif direction == "right":
+            self._move(color, (1, 0), ["RightWall", "LeftWall"])
+        elif direction == "up":
+            self._move(color, (0, -1), ["UpWall", "DownWall"])
+        elif direction == "low":
+            self._move(color, (0, 1), ["DownWall", "UpWall"])
+        else:
+            raise Exception("Direction parameter must be equal to 'left', 'right', 'up' or 'low'.")

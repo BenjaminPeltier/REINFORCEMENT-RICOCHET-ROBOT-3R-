@@ -53,7 +53,7 @@ class BoardRicochet(Board):
         return self._caseTransform(x, y)
 
 
-    def setCase(self, x, y, content):  # gérer les listes
+    def _setCase(self, x, y, content):  # gérer les listes
         """
         Set the content of a case 
             :param self: The board itself
@@ -71,6 +71,34 @@ class BoardRicochet(Board):
             value = content
 
         self.grid[y, x] = value
+
+
+    def delElements(self, x, y, *elements):
+        """
+        Remove elements from a case
+            :param self: The board itself
+            :param x: The horizontal position of a case
+            :param y: The vertical position of a case
+            :param *elements: The elements to remove of the case
+        """   
+        case = self.grid.getCase(x, y)
+        for element in elements:
+            case.remove(element)
+        self.grid._setCase(x, y, case)
+
+    
+    def addElements(self, x, y, *elements):
+        """
+        Add elements from a case
+            :param self: The board itself
+            :param x: The horizontal position of a case
+            :param y: The vertical position of a case
+            :param *elements: The elements to add in the case
+        """   
+        case = self.grid.getCase(x, y)
+        for element in elements:
+            case.add(element)
+        self.grid._setCase(x, y, case)
 
 
     def findColor(self, color):
