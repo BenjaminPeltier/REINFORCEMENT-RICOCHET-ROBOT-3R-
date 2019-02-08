@@ -6,6 +6,14 @@ class Board :
         self.grid = np.zeros((yDim, xDim))
 
 
+    def loadGrid(self):
+        """
+        Load the board grid from a csv
+            :param self: The board itself
+        """   
+        self.grid = np.loadtxt(open("test.csv", "rb"), delimiter=",")
+
+
     def getCase(self, x, y):
         """
         Get a case of a board at a position (x, y)
