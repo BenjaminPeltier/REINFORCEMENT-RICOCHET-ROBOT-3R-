@@ -25,24 +25,3 @@
 * Bleu : 512
 * Vert : 1024
 * Jaune : 2048
-
-# Représentation d'une case
-
-Représentation d'une case où on trouve un pion vert sur une position d'arrivée verte.
-
-```JSON
-{
-    "LeftWall": 0, 
-    "RightWall": 0, 
-    "UpWall": 0, 
-    "DownWall": 0, 
-    "Red": 0,
-    "Blue": 0,
-    "Green": 0,
-    "Yellow": 1,
-    "RedWin": 0,
-    "BlueWin": 0,
-    "GreenWin": 0,
-    "YellowWin": 1,
-}
-```
