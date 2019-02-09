@@ -70,15 +70,24 @@ class Board :
         return self.grid.shape[0]
 
 
+    def toVec(self):
+        """
+        docstring here
+            :param self: The board itself
+            :return: A vector transformation of the board
+        """   
+        return self.grid.reshape(
+            (self.grid.shape[0] * self.grid.shape[1])
+        )
+
+
     def __repr__(self):
         """
         Representation of the board as a vector
             :param self: The board itself
             :return: A numpy array
         """
-        return str(self.grid.reshape(
-            (self.grid.shape[0] * self.grid.shape[1])
-        ))
+        return str(self)
 
 
     def __str__(self):
@@ -86,5 +95,5 @@ class Board :
         Human readable representation of a Board
             :param self: The board itself
         """   
-        return self.grid.__str__()
+        return str(self.grid)
     
