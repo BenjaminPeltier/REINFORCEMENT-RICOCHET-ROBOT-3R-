@@ -21,10 +21,10 @@ SEQUENCE = [
 def actions(rico, app):
     app.lastLog.set("Start !")
     for step in SEQUENCE:
-        # print(rico.grid)
+        print(rico.grid)
         time.sleep(3)
         rico.move(*step)
-        # print(rico.grid)
+        print(rico.grid)
         app.board = rico.grid
         app.lastLog.set(f"{step[0]} : {step[1]}")
         app.lastLog.set(f"Win ? {rico.isWin()}")
