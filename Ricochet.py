@@ -39,9 +39,7 @@ class Ricochet :
         currentCase = self.grid.getCase(*tockenPos)
         adjCase = self.grid.getCase(tockenPos[0] + vec[0], tockenPos[1] + vec[1])
         nbMoves = 0
-        print(f"{set(adjCase)} ; {adjCase} ; {currentCase} ; {blocking} ; cond1 : {adjCase != None} ; cond2 : {blocking[0] not in currentCase} ; cond3 : {((blocking[1] & set(adjCase)) == set())} ; total : {adjCase and blocking[0] not in currentCase and ((blocking[1] & set(adjCase)) == set())}")
         while adjCase != None and blocking[0] not in currentCase and ((blocking[1] & set(adjCase)) == set()) :
-            print("bouh")
             currentCase = adjCase
             nbMoves += 1
             try:
