@@ -37,13 +37,16 @@ class Ricochet :
         currentCase = self.grid.getCase(*tockenPos)
         adjCase = self.grid.getCase(tockenPos[0] + vec[0], tockenPos[1] + vec[1])
         nbMoves = 0
-        while blockingWalls[0] not in currentCase and blockingWalls[1] not in adjCase:
+        while blockingWalls[0] not in currentCase and blockingWalls[1] not in adjCase and adjCase != None:
             currentCase = adjCase
             nbMoves += 1
-            adjCase = self.grid.getCase(
-                tockenPos[0] + (nbMoves+1)*vec[0], 
-                tockenPos[1] + (nbMoves+1)*vec[1]
-            )
+            try:
+                adjCase = self.grid.getCase(
+                    tockenPos[0] + (nbMoves+1)*vec[0], 
+                    tockenPos[1] + (nbMoves+1)*vec[1]
+                )
+            except IndexError:
+                adjCase = None
         self.grid.delElements(*tockenPos, color)
         self.grid.addElements(
             tockenPos[0] + (nbMoves)*vec[0], 
