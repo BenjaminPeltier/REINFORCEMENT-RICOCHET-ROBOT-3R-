@@ -2,25 +2,27 @@ import tkinter as tk
 from operator import index
 from tkinter import Label, mainloop
 
-HEIGHT = 500
-WIDTH = 500
-SHOW_GRID = True
-
 class Application(tk.Frame):
 
-    def __init__(self, board=None, master=tk.Tk()):
+    def __init__(self, board, master=tk.Tk(), boardWidth=500, boardHeight=500, showGrid=True):
         super().__init__(master)
         self.master = master
+
         self.board = board
         self.lastLog = tk.StringVar()
         self.lastLog.trace("w", self.update)
+
+        self.boardWidth = boardWidth
+        self.boardHeight = boardHeight
+        self.showGrid = showGrid
+
         self.pack()
         self.create_content()
 
 
     def create_content(self):
         # Board
-        self.canvas = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg='white', bd=4, relief="ridge")
+        self.canvas = tk.Canvas(self, width=self.boardWidth, height=self.boardHeight, bg='white', bd=4, relief="ridge")
 
         # Logs
         # Frame
@@ -33,11 +35,11 @@ class Application(tk.Frame):
         scroll=tk.Scrollbar(self.logs)
 
         # Logs text
-        self.logText=tk.Text(self.logs, height=HEIGHT//15)  # 15 is the default size of fonts
+        self.logText=tk.Text(self.logs, height=self.boardHeight//15)  # 15 is the default size of fonts
         self.logText.configure(yscrollcommand=scroll.set)
         self.logText.configure(state="disabled")
 		
-		# pack everything
+		# Pack everything
         logTitle.pack(side="top")
         scroll.pack(side="right")
         self.canvas.pack(side="left")
@@ -56,10 +58,10 @@ class Application(tk.Frame):
     def drawBoard(self):
         boardX = self.board.getSizeX()
         boardY = self.board.getSizeY()
-        widthCase = WIDTH // boardX
-        heightCase = HEIGHT // boardY
-        startX = (WIDTH % boardX) // 2 + 7
-        startY = (HEIGHT % boardY) // 2 + 7
+        widthCase = self.boardWidth // boardX
+        heightCase = self.boardHeight // boardY
+        startX = (self.boardWidth % boardX) // 2 + 7
+        startY = (self.boardHeight % boardY) // 2 + 7
         margin = 5
 
         self.canvas.delete("all")
@@ -156,7 +158,7 @@ class Application(tk.Frame):
                             outline="yellow"
                         )
 
-                if SHOW_GRID :
+                if self.showGrid :
                     self.canvas.create_rectangle(
                         startX + x * widthCase, startY + y * heightCase,
                         startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
@@ -173,8 +175,3 @@ class Application(tk.Frame):
         self.canvas.pack()
         self.logText.pack()
         self.logs.pack()
-
-
-if __name__ == "__main__":
-    app = Application()
-    app.mainloop()
