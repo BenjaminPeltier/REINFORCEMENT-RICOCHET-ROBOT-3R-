@@ -4,6 +4,7 @@ from tkinter import Label, mainloop
 
 HEIGHT = 500
 WIDTH = 500
+SHOW_GRID = True
 
 class Application(tk.Frame):
 
@@ -19,11 +20,11 @@ class Application(tk.Frame):
 
     def create_content(self):
         # Board
-        self.canvas = tk.Canvas(self, width=500, height=500, bg='white', bd=4, relief="ridge")
+        self.canvas = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg='white', bd=4, relief="ridge")
 
         # Logs
         # Frame
-        self.logs=tk.Frame(self, width=500, height=500)
+        self.logs=tk.Frame(self, width=100, height=500)
 
         # Logs title
         logTitle = tk.Label(self.logs, text="LOGS", width=50)
@@ -70,25 +71,29 @@ class Application(tk.Frame):
                         self.canvas.create_line(
                             startX + x * widthCase, startY + y * heightCase,
                             startX + x * widthCase, startY + y * heightCase + heightCase,
-                            width=3
+                            width=3,
+                            tags="walls"
                         )
                     elif elem == "RightWall":
                         self.canvas.create_line(
                             startX + x * widthCase + widthCase, startY + y * heightCase,
                             startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
-                            width=3
+                            width=3,
+                            tags="walls"
                         )
                     elif elem == "UpWall":
                         self.canvas.create_line(
                             startX + x * widthCase, startY + y * heightCase,
                             startX + x * widthCase  + widthCase, startY + y * heightCase,
-                            width=3
+                            width=3,
+                            tags="walls"
                         )
                     elif elem == "DownWall":
                         self.canvas.create_line(
                             startX + x * widthCase, startY + y * heightCase + heightCase,
                             startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
-                            width=3
+                            width=3,
+                            tags="walls"
                         )
                     elif elem == "Red":
                         self.canvas.create_oval(
@@ -150,7 +155,18 @@ class Application(tk.Frame):
                             width=3,
                             outline="yellow"
                         )
+
+                if SHOW_GRID :
+                    self.canvas.create_rectangle(
+                        startX + x * widthCase, startY + y * heightCase,
+                        startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
+                        width=1,
+                        outline="grey",
+                        tags="grid"
+                    )
+                    self.canvas.tag_lower("grid", "walls")
     
+
     def update(self, *args):
         self.updateLogs()
         self.drawBoard()
