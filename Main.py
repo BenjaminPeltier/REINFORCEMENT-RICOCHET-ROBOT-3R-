@@ -1,5 +1,6 @@
 import time
 from tkinter import mainloop
+
 import _thread
 from GUI import Application
 from Ricochet import Ricochet
@@ -15,14 +16,21 @@ SEQUENCE = [
     ("Green", "up"),
     ("Red", "left"),
     ("Red", "up"),
-    ("Red", "right")
+    ("Red", "right"),
+    ("Yellow", "right"),
+    ("Yellow", "right"),
+    ("Red", "low"),
+    ("Yellow", "low"),
+    ("Yellow", "right"),
+    ("Yellow", "up"),
+    ("Yellow", "left")
 ]
 
 def actions(rico, app):
     app.lastLog.set("Start !")
     for step in SEQUENCE:
         print(rico.grid)
-        time.sleep(3)
+        time.sleep(1)
         rico.move(*step)
         print(rico.grid)
         app.board = rico.grid
@@ -32,7 +40,7 @@ def actions(rico, app):
 def main():
     rico = Ricochet()
     rico.grid.loadGrid("grids/grid1.csv")
-    app = Application(board=rico.grid)
+    app = Application(board=rico.grid, showGrid=True)
 
     _thread.start_new_thread( actions, (rico, app) )
     app.mainloop()
