@@ -7,6 +7,7 @@ class Application(tk.Frame):
     def __init__(self, board, master=tk.Tk(), boardWidth=500, boardHeight=500, showGrid=True):
         super().__init__(master)
         self.master = master
+        self.master.title("Ricochet Robot")
 
         self.board = board
         self.lastLog = tk.StringVar()
