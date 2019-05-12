@@ -10,8 +10,19 @@ class Board :
         """
         Load the board grid from a csv
             :param self: The board itself
+            :param gridFile: The csv which contains a grid
+        """
+        with open(gridFile, "rb") as grid:
+            self.grid = np.loadtxt(grid, delimiter=",")
+
+
+    def saveGrid(self, gridFile):
+        """
+        Save the board grid from a csv
+            :param self: The board itself
+            :param gridFile: The csv which will contain a grid
         """   
-        self.grid = np.loadtxt(open(gridFile, "rb"), delimiter=",")
+        self.grid = np.savetxt(gridFile, self.grid, delimiter=",")
 
 
     def getCase(self, x, y):
