@@ -1,4 +1,4 @@
-from Board import Board 
+from ricochet_robot.game.Board import Board 
 
 class BoardRicochet(Board):
 

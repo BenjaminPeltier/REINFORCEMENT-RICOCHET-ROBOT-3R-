@@ -2,8 +2,8 @@ import time
 from tkinter import mainloop
 
 import _thread
-from GUI import Application
-from Ricochet import Ricochet
+from ricochet_robot.GUI.GUI import Application
+from ricochet_robot.game.Ricochet import Ricochet
 
 SEQUENCE = [
     ("Blue", "left"),
