@@ -29,49 +29,25 @@ pip3 -r requirements.txt
 ### Visualiser une grille
 
 ```bash
-python3 main.py --show path/to/grid.csv
-```
-
-or
-
-```bash
-python3 main.py -s path/to/grid.csv
+python3 main.py show path/to/grid.csv
 ```
 
 ### Apprendre un nouveau modèle
 
 ```bash
-python3 main.py -l -o path/to/output path/to/grid.csv
-```
-
-or
-
-```bash
-python3 main.py --learning --output path/to/output path/to/grid.csv
+python3 main.py learn --output path/to/output path/to/grid.csv
 ```
 
 ### Continuer l'apprentissage d'un modèle
 
 ```bash
-python3 main.py -l -i path/to/model -o path/to/output path/to/grid.csv
-```
-
-or
-
-```bash
-python3 main.py --learning --input path/to/model --output path/to/output path/to/grid.csv
+python3 main.py learn --input path/to/model --output path/to/output path/to/grid.csv
 ```
 
 ### Utiliser un modèle déjà appris
 
 ```bash
-python3 main.py -p path/to/model path/to/grid.csv
-```
-
-or
-
-```bash
-python3 main.py --play path/to/model path/to/grid.csv
+python3 main.py play path/to/model path/to/grid.csv
 ```
 
 ## Créer vos grilles

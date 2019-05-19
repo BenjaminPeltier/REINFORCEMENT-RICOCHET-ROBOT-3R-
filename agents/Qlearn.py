@@ -57,9 +57,10 @@ class Qlearn:
         self.q_table[state][action] = (1 - self.learning_rate) * self.q_table[state][action]
         self.q_table[state][action] += self.learning_rate * learned_value
 
-    def updateState(self, state):
+    def updateState(self, state, learning=True):
         action = self.choose_action(state)
-        self.learn(state, action)
+        if learning:
+            self.learn(state, action)
         state.doAction(action)
         return action
 

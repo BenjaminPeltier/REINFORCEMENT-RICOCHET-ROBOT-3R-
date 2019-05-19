@@ -2,8 +2,11 @@ import time
 from tkinter import mainloop
 import argparse
 import _thread
+from matplotlib import pyplot as plt
 from ricochet_robot.GUI.GUI import Application
 from ricochet_robot.game.Ricochet import Ricochet
+from agents.DQN import DQN
+from agents.DQN import Qlearn
 
 SEQUENCE = [
     ("Blue", "left"),
@@ -17,67 +20,113 @@ SEQUENCE = [
     ("Red", "left"),
     ("Red", "up"),
     ("Red", "right"),
-    ("Yellow", "right"),
-    ("Yellow", "right"),
-    ("Red", "low"),
-    ("Yellow", "low"),
-    ("Yellow", "right"),
-    ("Yellow", "up"),
-    ("Yellow", "left")
 ]
 
-def actions(rico, app):
+def model_act(rico, app, model, nb_episode=5, nb_step=100, max_moves=100, output_path=None, learning=False):
     app.lastLog.set("Start !")
-    for step in SEQUENCE:
-        print(rico.grid)
-        time.sleep(1)
-        rico.move(*step)
-        print(rico.grid)
-        app.board = rico.grid
-        app.lastLog.set(f"{step[0]} : {step[1]}")
-        app.lastLog.set(f"Win ? {rico.isWin()}")
+    historic = []
+    for ep in range(nb_episode):
+        for step in range(nb_step):
+            rico.reset()
+            moves = 0
+            for _ in range(max_moves):
+                moves+=1
+                action = model.updateState(rico, learning=learning)
+                if rico.reward() == 1:
+                    break
+            historic.append(moves)
+            plt.plot(historic)
+            plt.show()
 
-def show():
+        app.lastLog.set(f"Episode {ep}")
+        for _ in range(max_moves):
+            action = model.updateState(rico, learning=learning)
+            app.board = rico.grid
+            time.sleep(1)
+            if rico.reward() == 1:
+                app.lastLog.set("Win !")
+                break
+
+    app.lastLog.set("The end")
+
+
+def show(args):
+    grid = args.grid
+    rico = Ricochet()
+    rico.grid.loadGrid(grid)
+    app = Application(board=rico.grid, showGrid=True)
+    app.lastLog.set(f"{grid} loaded !")
+    app.mainloop()
+
+
+def learn(args):
+    grid = args.grid
+    rico = Ricochet()
+    rico.grid.loadGrid(grid)
+    app = Application(board=rico.grid, showGrid=True)
+    app.lastLog.set(f"{grid} loaded !")
+    app.mainloop()
+
+
+
+def play(args): # grid, model
     pass
 
-def learn():
-    pass
 
-def play():
-    pass
+def demo(args):
+    def actions(rico, app):
+        app.lastLog.set("Start !")
+        for step in SEQUENCE:
+            print(rico.grid)
+            time.sleep(1)
+            rico.move(*step)
+            print(rico.grid)
+            app.board = rico.grid
+            app.lastLog.set(f"{step[0]} : {step[1]}")
+            app.lastLog.set(f"Win ? {rico.isWin()}")
+        app.lastLog.set("The end")
 
-def args():
+    rico = Ricochet()
+    rico.grid.loadGrid("grids/grid1.csv")
+    app = Application(board=rico.grid, showGrid=True)
+
+    _thread.start_new_thread( actions, (rico, app) )
+    app.mainloop()
+
+
+def get_args():
     parser = argparse.ArgumentParser(description="Reinforcement Ricochet Robot (3R)")
-    subparsers = parser.add_subparsers(help='Sub-commands you can use')
+    subparsers = parser.add_subparsers(help="Sub-commands you can use")
 
     # command show
-    parser_show = subparsers.add_parser('show', help='Show a grid')
+    parser_show = subparsers.add_parser("show", help="Show a grid")
+    parser_show.add_argument("grid", help="The grids you want to show")
     parser_show.set_defaults(func=show)
 
     # command learn
-    parser_learn = subparsers.add_parser('learn', help='Learn a model')
-    parser_learn.add_argument('-i', '--input', help='A pretrained model')
-    parser_learn.add_argument('-o', '--output', help='The output model')
+    parser_learn = subparsers.add_parser("learn", help="Learn a model")
+    parser_learn.add_argument("-i", "--input", help="A pretrained model")
+    parser_learn.add_argument("-o", "--output", help="The output model")
+    parser_learn.add_argument("grids", nargs="+", help="The grids you want to learn on")
     parser_learn.set_defaults(func=learn)
 
     # command play
-    parser_play = subparsers.add_parser('play', help='Play a model')
-    parser_play.add_argument('model', help='The model you want to use')
+    parser_play = subparsers.add_parser("play", help="Play a model")
+    parser_play.add_argument("model", help="The model you want to use")
+    parser_play.add_argument("grids", nargs="+", help="The grids you want to play on")
     parser_play.set_defaults(func=play)
 
-    parser.add_argument("grids", nargs="+", help="The grids you want to play on")
+    # command demo
+    parser_demo = subparsers.add_parser("demo", help="Play a demo")
+    parser_demo.set_defaults(func=demo)
+
     parser.add_argument("-v", "--verbose", action="store_true", help="Increase output verbosity")
     return parser.parse_args()
 
 
 def main():
-    print(args().input)
-    # rico = Ricochet()
-    # rico.grid.loadGrid("grids/grid1.csv")
-    # app = Application(board=rico.grid, showGrid=True)
-
-    # _thread.start_new_thread( actions, (rico, app) )
-    # app.mainloop()
+    args = get_args()
+    args.func(args)
     
 
 if __name__ == "__main__":

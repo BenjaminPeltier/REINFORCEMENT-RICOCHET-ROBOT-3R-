@@ -96,15 +96,16 @@ class DQN(Qlearn):
 
         return bestVal, bestAction
 
-    def updateState(self, state):
+    def updateState(self, state, learning=True):
         action = self.choose_action(state)
-        self.remember(state, action)
+        if learning:
+            self.remember(state, action)
 
-        if self.last_update >= self.fixed_period:
-            self.learn()
-            self.last_update = 0
-        else:
-            self.last_update += 1
+            if self.last_update >= self.fixed_period:
+                self.learn()
+                self.last_update = 0
+            else:
+                self.last_update += 1
 
         state.doAction(action)
         return action

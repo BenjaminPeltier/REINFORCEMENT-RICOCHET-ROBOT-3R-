@@ -56,7 +56,7 @@ class Board :
         self.grid = grid
 
 
-    def getGrid(self):
+    def toMat(self):
         """
         Get the grid
             :param self: The board itself
