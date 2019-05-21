@@ -1,5 +1,8 @@
+import tempfile
+import os
 from ricochet_robot.game.Ricochet import Ricochet
 import gym
+import numpy as np
 
 class InterfaceRicochet(gym.Env):
     action_meaning = {
@@ -22,8 +25,8 @@ class InterfaceRicochet(gym.Env):
     }
 
     def __init__(self, grid, not_end_score=0, app=None):
-        self.grid_file = grid
         self.ricochet = Ricochet()
+        self.grid_file = grid
         self.reset()
         self.app = app
         self.not_end_score = not_end_score
@@ -34,20 +37,46 @@ class InterfaceRicochet(gym.Env):
         return state, self.reward(), self.ricochet.isWin()
 
     def reset(self):
-        self.ricochet.grid.loadGrid(grid_file)
+        self.ricochet.grid.loadGrid(self.grid_file)
 
     def render(self):
         if self.app:
-            app.board = self.ricochet.grid
+            self.app.board = self.ricochet.grid
         else:
             print(self.ricochet.grid)
 
-    @staticmethod
-    def listActions():
-        return [f"Moves {val[0]} robot {val[1]}" for val in action_meaning.values()]
+    @classmethod
+    def listActions(cls):
+        return [key for key in cls.action_meaning.keys()]
+
+    @classmethod
+    def translation(cls, action):
+        return cls.action_meaning[action]
     
     def doAction(self, action):
-        self.ricochet.move(*action_meaning[action])
+        self.ricochet.move(*self.translation(action))
 
     def reward(self):
         return 1 if self.ricochet.isWin() else self.not_end_score
+
+    def _save_temp(self):
+        file = tempfile.mkstemp(suffix=".csv", prefix="grid")
+        file_name = file[1]
+        print(file_name)
+        # print(self.ricochet.grid)
+        self.ricochet.grid.saveGrid(file_name)
+        # with open(file_name, "r") as csv:
+        #     print(csv.read())
+        return file_name
+
+    def copy(self):
+        file_name = self._save_temp()
+        res = InterfaceRicochet(file_name, not_end_score=self.not_end_score, app=self.app)
+        os.remove(file_name)
+        return res
+
+    # def __hash__(self):
+    #     return self.
+
+    def __str__(self):
+        return str(self.ricochet.grid)

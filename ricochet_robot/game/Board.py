@@ -96,9 +96,14 @@ class Board :
         """
         Representation of the board as a vector
             :param self: The board itself
-            :return: A numpy array
+            :return: CSV like string
         """
-        return str(self)
+        res = ""
+        for line in self.grid:
+            for i, nb in enumerate(line):
+                res += f"{nb}," if i < self.getSizeX() - 1 else str(nb)
+            res += "\n"
+        return res
 
 
     def __str__(self):

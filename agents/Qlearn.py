@@ -30,7 +30,9 @@ class Qlearn:
         bestVal = - np.inf
         bestAction = ""
         for newAction in state.listActions():
+            print(state)
             tempPos = state.copy()
+            print(np.array_equal(tempPos.ricochet.grid, state.ricochet.grid))
             tempPos.doAction(newAction)
             if tempPos in self.q_table.keys():
                 q_value = max(self.q_table[tempPos].values())

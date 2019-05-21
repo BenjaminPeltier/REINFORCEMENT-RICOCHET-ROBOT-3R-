@@ -2,11 +2,12 @@ import time
 from tkinter import mainloop
 import argparse
 import _thread
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from ricochet_robot.GUI.GUI import Application
 from ricochet_robot.game.Ricochet import Ricochet
 from agents.DQN import DQN
-from agents.DQN import Qlearn
+from agents.Qlearn import Qlearn
+from ricochet_robot.interface.interface_ricochet import InterfaceRicochet
 
 SEQUENCE = [
     ("Blue", "left"),
@@ -22,30 +23,42 @@ SEQUENCE = [
     ("Red", "right"),
 ]
 
-def model_act(rico, app, model, nb_episode=5, nb_step=100, max_moves=100, output_path=None, learning=False):
+def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, output_path=None, learning=False):
     app.lastLog.set("Start !")
     historic = []
-    for ep in range(nb_episode):
-        for step in range(nb_step):
-            rico.reset()
-            moves = 0
-            for _ in range(max_moves):
-                moves+=1
-                action = model.updateState(rico, learning=learning)
-                if rico.reward() == 1:
-                    break
-            historic.append(moves)
-            plt.plot(historic)
-            plt.show()
+
+    # Pas sûr que l'ordre dans la boucle soit le plus pertinent
+    for grid in grids:
+        rico = InterfaceRicochet(grid, app=app)
+        rico.render()
+        app.lastLog.set(f"{grid} loaded !")
+
+        for ep in range(nb_episode):
+            for step in range(nb_step):
+                
+                rico.reset()
+
+                moves = 0
+                for _ in range(max_moves):
+                    moves+=1
+                    action = model.updateState(rico, learning=learning)
+                    if rico.reward() == 1:
+                        break
+                # historic.append(moves)
+                # plt.plot(historic)
+                # plt.show()
 
         app.lastLog.set(f"Episode {ep}")
         for _ in range(max_moves):
             action = model.updateState(rico, learning=learning)
-            app.board = rico.grid
+            rico.render()
             time.sleep(1)
             if rico.reward() == 1:
                 app.lastLog.set("Win !")
                 break
+
+    if output_path:
+        app.lastLog.set("Model saved")
 
     app.lastLog.set("The end")
 
@@ -60,13 +73,20 @@ def show(args):
 
 
 def learn(args):
-    grid = args.grid
+    grid = args.grids[0]
     rico = Ricochet()
     rico.grid.loadGrid(grid)
     app = Application(board=rico.grid, showGrid=True)
-    app.lastLog.set(f"{grid} loaded !")
-    app.mainloop()
+    if args.deep:
+        model = DQN()
+    else:
+        model = Qlearn()
 
+    if args.input:
+        model.load_model(args.input)
+
+    _thread.start_new_thread(_model_act, (app, model, *args.grids), {"output_path":(args.output if args.output else None), "learning":1})
+    app.mainloop()
 
 
 def play(args): # grid, model
@@ -85,6 +105,7 @@ def demo(args):
             app.lastLog.set(f"{step[0]} : {step[1]}")
             app.lastLog.set(f"Win ? {rico.isWin()}")
         app.lastLog.set("The end")
+        # rico.grid.saveGrid("grids/...")
 
     rico = Ricochet()
     rico.grid.loadGrid("grids/grid1.csv")
@@ -96,6 +117,7 @@ def demo(args):
 
 def get_args():
     parser = argparse.ArgumentParser(description="Reinforcement Ricochet Robot (3R)")
+    parser.set_defaults(func=demo)
     subparsers = parser.add_subparsers(help="Sub-commands you can use")
 
     # command show
@@ -107,6 +129,7 @@ def get_args():
     parser_learn = subparsers.add_parser("learn", help="Learn a model")
     parser_learn.add_argument("-i", "--input", help="A pretrained model")
     parser_learn.add_argument("-o", "--output", help="The output model")
+    parser_learn.add_argument("-d", "--deep", action="store_true", help="Use deep Qnetwork or basic qlearning")
     parser_learn.add_argument("grids", nargs="+", help="The grids you want to learn on")
     parser_learn.set_defaults(func=learn)
 
