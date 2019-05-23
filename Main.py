@@ -34,6 +34,8 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
         app.lastLog.set(f"{grid} loaded !")
 
         for ep in range(nb_episode):
+            app.lastLog.set(f"Starting episode {ep+1}")
+            app.lastLog.set(f"Learning ...")
             for step in range(nb_step):
                 
                 rico.reset()
@@ -46,7 +48,7 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
                         app.lastLog.set(f"Win in {moves} movements")
                         break
 
-            app.lastLog.set(f"Episode {ep+1}")
+            app.lastLog.set(f"Result episode {ep+1}")
             for _ in range(max_moves):
                 action = model.updateState(rico, learning=learning)
                 rico.render()
