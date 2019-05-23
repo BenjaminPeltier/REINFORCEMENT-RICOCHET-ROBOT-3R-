@@ -37,24 +37,27 @@ class Ricochet :
         blocking[1] = {blocking[1], "Red", "Yellow", "Green", "Blue"}
         tockenPos = self.grid.findColor(color)
         currentCase = self.grid.getCase(*tockenPos)
-        adjCase = self.grid.getCase(tockenPos[0] + vec[0], tockenPos[1] + vec[1])
-        nbMoves = 0
-        while adjCase != None and blocking[0] not in currentCase and ((blocking[1] & set(adjCase)) == set()) :
-            currentCase = adjCase
-            nbMoves += 1
-            try:
-                adjCase = self.grid.getCase(
-                    tockenPos[0] + (nbMoves+1)*vec[0], 
-                    tockenPos[1] + (nbMoves+1)*vec[1]
-                )
-            except IndexError:
-                adjCase = None
-        self.grid.delElements(*tockenPos, color)
-        self.grid.addElements(
-            tockenPos[0] + (nbMoves)*vec[0], 
-            tockenPos[1] + (nbMoves)*vec[1],
-            color
-        )
+        try:
+            adjCase = self.grid.getCase(tockenPos[0] + vec[0], tockenPos[1] + vec[1])
+            nbMoves = 0
+            while adjCase != None and blocking[0] not in currentCase and ((blocking[1] & set(adjCase)) == set()) :
+                currentCase = adjCase
+                nbMoves += 1
+                try:
+                    adjCase = self.grid.getCase(
+                        tockenPos[0] + (nbMoves+1)*vec[0], 
+                        tockenPos[1] + (nbMoves+1)*vec[1]
+                    )
+                except IndexError:
+                    adjCase = None
+            self.grid.delElements(*tockenPos, color)
+            self.grid.addElements(
+                tockenPos[0] + (nbMoves)*vec[0], 
+                tockenPos[1] + (nbMoves)*vec[1],
+                color
+            )
+        except IndexError:
+            pass
 
 
     def move(self, color, direction):

@@ -30,16 +30,14 @@ class Qlearn:
         bestVal = - np.inf
         bestAction = ""
         for newAction in state.listActions():
-            print(state)
             tempPos = state.copy()
-            print(np.array_equal(tempPos.ricochet.grid, state.ricochet.grid))
             tempPos.doAction(newAction)
             if tempPos in self.q_table.keys():
                 q_value = max(self.q_table[tempPos].values())
             else:
                 q_value = 0
                 self.q_table[tempPos] = {action: 0 for action in state.listActions()}
-            if q_value > bestVal :
+            if q_value > bestVal or (q_value == bestVal and rd.random() >= 0.5):
                 bestVal = q_value
                 bestAction = newAction
         return bestVal, bestAction
@@ -56,7 +54,11 @@ class Qlearn:
             learned_value = state2.reward() + self.discount_factor * bestNextVal
         else:
             learned_value = -0.5 + self.discount_factor * bestNextVal
-        self.q_table[state][action] = (1 - self.learning_rate) * self.q_table[state][action]
+
+        if state not in self.q_table:
+            self.q_table[state] = {action: 0 for action in state.listActions()}
+
+        self.q_table[state][action] *= (1 - self.learning_rate)
         self.q_table[state][action] += self.learning_rate * learned_value
 
     def updateState(self, state, learning=True):

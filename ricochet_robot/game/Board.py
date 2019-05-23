@@ -22,7 +22,7 @@ class Board :
             :param self: The board itself
             :param gridFile: The csv which will contain a grid
         """   
-        self.grid = np.savetxt(gridFile, self.grid, delimiter=",")
+        np.savetxt(gridFile, self.grid, delimiter=",")
 
 
     def getCase(self, x, y):

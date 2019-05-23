@@ -52,6 +52,10 @@ class InterfaceRicochet(gym.Env):
     @classmethod
     def translation(cls, action):
         return cls.action_meaning[action]
+
+    @classmethod
+    def readable_translation(cls, action):
+        return f"{cls.action_meaning[action][0]} moves {cls.action_meaning[action][1]}"
     
     def doAction(self, action):
         self.ricochet.move(*self.translation(action))
@@ -62,7 +66,6 @@ class InterfaceRicochet(gym.Env):
     def _save_temp(self):
         file = tempfile.mkstemp(suffix=".csv", prefix="grid")
         file_name = file[1]
-        print(file_name)
         # print(self.ricochet.grid)
         self.ricochet.grid.saveGrid(file_name)
         # with open(file_name, "r") as csv:
@@ -75,8 +78,13 @@ class InterfaceRicochet(gym.Env):
         os.remove(file_name)
         return res
 
-    # def __hash__(self):
-    #     return self.
+    def __hash__(self):
+        return hash(str(self.ricochet.grid.grid.data))
+
+    def __eq__(self, value):
+        if not isinstance(value, InterfaceRicochet):
+            return False
+        return np.array_equal(self.ricochet.grid.grid, value.ricochet.grid.grid)
 
     def __str__(self):
         return str(self.ricochet.grid)

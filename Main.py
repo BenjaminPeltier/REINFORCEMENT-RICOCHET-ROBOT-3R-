@@ -43,19 +43,18 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
                     moves+=1
                     action = model.updateState(rico, learning=learning)
                     if rico.reward() == 1:
+                        app.lastLog.set(f"Win in {moves} movements")
                         break
-                # historic.append(moves)
-                # plt.plot(historic)
-                # plt.show()
 
-        app.lastLog.set(f"Episode {ep}")
-        for _ in range(max_moves):
-            action = model.updateState(rico, learning=learning)
-            rico.render()
-            time.sleep(1)
-            if rico.reward() == 1:
-                app.lastLog.set("Win !")
-                break
+            app.lastLog.set(f"Episode {ep+1}")
+            for _ in range(max_moves):
+                action = model.updateState(rico, learning=learning)
+                rico.render()
+                app.lastLog.set(f"Action : {rico.readable_translation(action)}")
+                time.sleep(0.2)
+                if rico.reward() == 1:
+                    app.lastLog.set(f"Win in {moves} movements")
+                    break
 
     if output_path:
         app.lastLog.set("Model saved")
