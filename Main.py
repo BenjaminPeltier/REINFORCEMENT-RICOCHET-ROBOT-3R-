@@ -23,9 +23,8 @@ SEQUENCE = [
     ("Red", "right"),
 ]
 
-def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, output_path=None, learning=False):
+def _model_act(app, model, *grids, nb_episode=10, nb_step=20, max_moves=50, output_path=None, learning=False):
     app.lastLog.set("Start !")
-    historic = []
 
     # Pas sûr que l'ordre dans la boucle soit le plus pertinent
     for grid in grids:
@@ -37,12 +36,10 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
             app.lastLog.set(f"Starting episode {ep+1}")
             app.lastLog.set(f"Learning ...")
             for step in range(nb_step):
-                
+                app.lastLog.set(f"Step {step+1}")
                 rico.reset()
 
-                moves = 0
-                for _ in range(max_moves):
-                    moves+=1
+                for moves in range(max_moves):
                     action = model.updateState(rico, learning=learning)
                     if rico.reward() == 1:
                         app.lastLog.set(f"Win in {moves} movements")
@@ -50,7 +47,7 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
 
             app.lastLog.set(f"Result episode {ep+1}")
             for _ in range(max_moves):
-                action = model.updateState(rico, learning=learning)
+                action = model.updateState(rico, learning=False)
                 rico.render()
                 app.lastLog.set(f"Action : {rico.readable_translation(action)}")
                 time.sleep(0.2)
@@ -58,8 +55,9 @@ def _model_act(app, model, *grids, nb_episode=5, nb_step=100, max_moves=100, out
                     app.lastLog.set(f"Win in {moves} movements")
                     break
 
-    if output_path:
-        app.lastLog.set("Model saved")
+            if output_path:
+                model.save(output_path)
+                app.lastLog.set("Model saved!")
 
     app.lastLog.set("The end")
 
@@ -79,7 +77,7 @@ def learn(args):
     rico.grid.loadGrid(grid)
     app = Application(board=rico.grid, showGrid=True)
     if args.deep:
-        model = DQN()
+        model = DQN((16, 16, 1), 16)
     else:
         model = Qlearn()
 

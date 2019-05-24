@@ -45,6 +45,9 @@ class InterfaceRicochet(gym.Env):
         else:
             print(self.ricochet.grid)
 
+    def is_terminal(self):
+        return self.reward() == 1
+
     @classmethod
     def listActions(cls):
         return [key for key in cls.action_meaning.keys()]
@@ -78,6 +81,9 @@ class InterfaceRicochet(gym.Env):
 
         os.remove(file_name)
         return res
+
+    def tomat(self):
+        return self.ricochet.grid.grid
 
     def __hash__(self):
         return hash(str(self.ricochet.grid.grid.data))
