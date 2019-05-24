@@ -64,17 +64,18 @@ class InterfaceRicochet(gym.Env):
         return 1 if self.ricochet.isWin() else self.not_end_score
 
     def _save_temp(self):
-        file = tempfile.mkstemp(suffix=".csv", prefix="grid")
-        file_name = file[1]
+        fd, file_name = tempfile.mkstemp(suffix=".csv", prefix="grid")
         # print(self.ricochet.grid)
         self.ricochet.grid.saveGrid(file_name)
         # with open(file_name, "r") as csv:
         #     print(csv.read())
+        os.close(fd)
         return file_name
 
     def copy(self):
         file_name = self._save_temp()
         res = InterfaceRicochet(file_name, not_end_score=self.not_end_score, app=self.app)
+
         os.remove(file_name)
         return res
 
