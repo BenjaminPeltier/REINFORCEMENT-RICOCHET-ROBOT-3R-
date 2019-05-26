@@ -77,7 +77,7 @@ def learn(args):
     rico.grid.loadGrid(grid)
     app = Application(board=rico.grid, showGrid=True)
     if args.deep:
-        model = DQN((16, 16, 1), 16)
+        model = DQN((16, 16), 16)
     else:
         model = Qlearn()
 
