@@ -3,11 +3,15 @@ import time
 import random as rd
 import numpy as np
 from agents.Qlearn import Qlearn
+import keras
 from keras.callbacks import TensorBoard
 from keras.layers import Dense, Flatten, Conv2D, Reshape, Input, MaxPool2D, Conv1D, MaxPool1D
 from keras import Sequential
 from keras.optimizers import Adam, SGD # SGD : plus d'epochs
+from keras.utils import plot_model
+import tensorflow as tf
 
+graph = tf.get_default_graph()
 class DQN(Qlearn):
 
     def __init__(self, state_size, action_size, model_path=None, name=None, learning_rate=0.01, discount_factor=0.009, exploration_rate=0.95, exploration_decay=0.99, exploration_min=0.01, epochs=10, batch_size=64, memory_size=1000000, fixed_period=64, verbose=0):
@@ -36,19 +40,22 @@ class DQN(Qlearn):
         self.verbose = verbose
 
     def _build_model(self):
-        model = Sequential()
-        if not isinstance(self.state_size, int) and len(self.state_size) == 2:
-            model.add(Reshape((16, 16, 1), input_shape=self.state_size))
-            model.add(Conv2D(8, (3, 3), activation="relu"))
-            model.add(MaxPool2D((4, 4)))
-            model.add(Flatten())
-            model.add(Dense(8, activation='relu'))
-        else:
-            model.add(Dense(16, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(self.action_size, activation='softmax'))
-        model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
-        model.summary()
-        return model
+        global graph
+        with graph.as_default():
+            model = Sequential()
+            if not isinstance(self.state_size, int) and len(self.state_size) == 2:
+                model.add(Reshape((16, 16, 1), input_shape=self.state_size))
+                model.add(Conv2D(8, (3, 3), activation="relu"))
+                model.add(MaxPool2D((4, 4)))
+                model.add(Flatten())
+                model.add(Dense(8, activation='relu'))
+            else:
+                model.add(Dense(16, input_dim=self.state_size, activation='relu'))
+            model.add(Dense(self.action_size, activation='softmax'))
+            model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
+            model.summary()
+            plot_model(model, to_file='model.png', show_shapes=True)
+            return model
 
     def remember(self, state, action):
         next_state = state.copy()
@@ -70,21 +77,23 @@ class DQN(Qlearn):
                     q_update = -1
 
                 if not terminal:
-                    q_update += self.discount_factor * np.amax(
-                        self.model.predict(state_next.tomat())[0]
-                    )
+                    global graph
+                    with graph.as_default():
+                        q_update += self.discount_factor * np.amax(
+                            self.model.predict(self._add_dim(state_next.tomat()))[0]
+                        )
 
-                q_values = self.model.predict(state_next.tomat())
+                q_values = self.model.predict(self._add_dim(state_next.tomat()))
                 q_values[0][state.listActions().index(action)] = q_update
                 positions.append(state_next.tomat())
                 targets.append(q_values.tolist()[0])
-            print(np.array(positions).shape)
-            print(np.array(targets).shape)
-            self.model.fit(
-                np.array(positions), np.array(targets),
-                batch_size=self.batch_size, epochs=self.epochs, verbose=self.verbose,
-                callbacks=[self.tb]
-            )
+
+            with graph.as_default():
+                self.model.fit(
+                    np.array(positions), np.array(targets),
+                    batch_size=self.batch_size, epochs=self.epochs, verbose=self.verbose,
+                    callbacks=[self.tb]
+                )
             self.updateExplorationRate()
 
     def maxQ(self, state):
@@ -93,8 +102,9 @@ class DQN(Qlearn):
         for newActions in state.listActions():
             tempPos = state.copy()
             tempPos.doAction(newActions)
-
-            q_value = np.max(self.model.predict(self._add_dim(tempPos.tomat())))
+            global graph
+            with graph.as_default():
+                q_value = np.max(self.model.predict(self._add_dim(tempPos.tomat())))
 
             if q_value > bestVal :
                 bestVal = q_value
@@ -125,7 +135,7 @@ class DQN(Qlearn):
         self.model.save(filename)
 
     def load_model(self, filename):
-        self.model.load(filename)
+        self.model = keras.models.load_model(filename)
 
     def __str__(self):
         return ""

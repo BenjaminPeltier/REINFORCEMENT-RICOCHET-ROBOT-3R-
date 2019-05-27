@@ -56,7 +56,7 @@ def _model_act(app, model, *grids, nb_episode=10, nb_step=20, max_moves=50, outp
                     break
 
             if output_path:
-                model.save(output_path)
+                model.save_model(output_path)
                 app.lastLog.set("Model saved!")
 
     app.lastLog.set("The end")
@@ -84,12 +84,29 @@ def learn(args):
     if args.input:
         model.load_model(args.input)
 
-    _thread.start_new_thread(_model_act, (app, model, *args.grids), {"output_path":(args.output if args.output else None), "learning":1})
+    _thread.start_new_thread(
+        _model_act, (app, model, *args.grids),
+        {"output_path":(args.output if args.output else None), "learning":1}
+    )
     app.mainloop()
 
 
 def play(args): # grid, model
-    pass
+    grid = args.grids[0]
+    rico = Ricochet()
+    rico.grid.loadGrid(grid)
+    app = Application(board=rico.grid, showGrid=True)
+    if args.deep:
+        model = DQN((16, 16), 16, exploration_rate=0, exploration_decay=0, exploration_min=0)
+    else:
+        model = Qlearn()
+    model.load_model(args.model)
+
+    _thread.start_new_thread(
+        _model_act, (app, model, *args.grids),
+        {"learning":False, "nb_episode":1, "nb_step":0, "max_moves":500}
+    )
+    app.mainloop()
 
 
 def demo(args):
@@ -134,6 +151,7 @@ def get_args():
 
     # command play
     parser_play = subparsers.add_parser("play", help="Play a model")
+    parser_play.add_argument("-d", "--deep", action="store_true", help="Use deep Qnetwork or basic qlearning")
     parser_play.add_argument("model", help="The model you want to use")
     parser_play.add_argument("grids", nargs="+", help="The grids you want to play on")
     parser_play.set_defaults(func=play)
