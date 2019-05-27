@@ -99,7 +99,7 @@ def play(args): # grid, model
     if args.deep:
         model = DQN((16, 16), 16, exploration_rate=0, exploration_decay=0, exploration_min=0)
     else:
-        model = Qlearn()
+        model = Qlearn(exploration_rate=0, exploration_decay=0, exploration_min=0)
     model.load_model(args.model)
 
     _thread.start_new_thread(
