@@ -14,7 +14,7 @@ import tensorflow as tf
 graph = tf.get_default_graph()
 class DQN(Qlearn):
 
-    def __init__(self, state_size, action_size, model_path=None, name=None, learning_rate=0.01, discount_factor=0.009, exploration_rate=0.95, exploration_decay=0.99, exploration_min=0.01, epochs=10, batch_size=64, memory_size=1000000, fixed_period=64, verbose=0):
+    def __init__(self, state_size, action_size, model_path=None, name=None, learning_rate=0.001, discount_factor=0.009, exploration_rate=0.95, exploration_decay=0.99, exploration_min=0.01, epochs=10, batch_size=256, memory_size=1024, fixed_period=512, verbose=0):
         super().__init__(
             learning_rate=learning_rate,
             discount_factor=discount_factor,
@@ -74,7 +74,8 @@ class DQN(Qlearn):
                 if state != state_next:
                     q_update = reward
                 else:
-                    q_update = -1
+                    # q_update = -1
+                    q_update = reward - 0.05
 
                 if not terminal:
                     global graph

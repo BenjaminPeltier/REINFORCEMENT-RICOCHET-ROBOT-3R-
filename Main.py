@@ -1,4 +1,5 @@
 import time
+import random as rd
 from tkinter import mainloop
 import argparse
 import _thread
@@ -23,41 +24,47 @@ SEQUENCE = [
     ("Red", "right"),
 ]
 
-def _model_act(app, model, *grids, nb_episode=10, nb_step=20, max_moves=50, output_path=None, learning=False):
+def _model_act(app, model, *grids, nb_episode=500, nb_step=20, max_moves=50, output_path=None, learning=False):
     app.lastLog.set("Start !")
 
-    # Pas sûr que l'ordre dans la boucle soit le plus pertinent
-    for grid in grids:
-        rico = InterfaceRicochet(grid, app=app)
+    # Pas sûr que le choix aléatoire des grilles soit le plus pertinent
+    rico = InterfaceRicochet(grids[0], app=app, not_end_score=-0.05)
+    
+    for ep in range(nb_episode):
+        grid = rd.choice(grids)
+        rico.grid_file = grid
+        rico.reset()
         rico.render()
         app.lastLog.set(f"{grid} loaded !")
 
-        for ep in range(nb_episode):
-            app.lastLog.set(f"Starting episode {ep+1}")
-            app.lastLog.set(f"Learning ...")
-            for step in range(nb_step):
-                app.lastLog.set(f"Step {step+1}")
-                rico.reset()
+        app.lastLog.set(f"Starting episode {ep+1}")
+        app.lastLog.set(f"Learning ...")
+        for step in range(nb_step):
+            app.lastLog.set(f"Step {step+1}")
+            rico.reset()
 
-                for moves in range(max_moves):
-                    action = model.updateState(rico, learning=learning)
-                    if rico.reward() == 1:
-                        app.lastLog.set(f"Win in {moves} movements")
-                        break
-
-            app.lastLog.set(f"Result episode {ep+1}")
-            for _ in range(max_moves):
-                action = model.updateState(rico, learning=False)
-                rico.render()
-                app.lastLog.set(f"Action : {rico.readable_translation(action)}")
-                time.sleep(0.2)
+            for moves in range(max_moves):
+                action = model.updateState(rico, learning=learning)
                 if rico.reward() == 1:
                     app.lastLog.set(f"Win in {moves} movements")
                     break
 
-            if output_path:
-                model.save_model(output_path)
-                app.lastLog.set("Model saved!")
+        app.lastLog.set(f"Result episode {ep+1}")
+        eps = model.exploration_rate
+        model.exploration_rate = model.exploration_min
+        for _ in range(max_moves):
+            action = model.updateState(rico, learning=False)
+            rico.render()
+            app.lastLog.set(f"Action : {rico.readable_translation(action)}")
+            time.sleep(0.2)
+            if rico.reward() == 1:
+                app.lastLog.set(f"Win in {moves} movements")
+                break
+        model.exploration_rate = eps
+
+        if output_path:
+            model.save_model(output_path)
+            app.lastLog.set("Model saved!")
 
     app.lastLog.set("The end")
 
