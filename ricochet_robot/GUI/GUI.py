@@ -4,18 +4,18 @@ from tkinter import Label, mainloop
 
 class Application(tk.Frame):
 
-    def __init__(self, board, master=tk.Tk(), boardWidth=500, boardHeight=500, showGrid=True):
+    def __init__(self, board, master=tk.Tk(), board_width=500, board_height=500, show_grid=True):
         super().__init__(master)
         self.master = master
         self.master.title("Ricochet Robot")
 
         self.board = board
-        self.lastLog = tk.StringVar()
-        self.lastLog.trace("w", self.update)
+        self.last_log = tk.StringVar()
+        self.last_log.trace("w", self.update)
 
-        self.boardWidth = boardWidth
-        self.boardHeight = boardHeight
-        self.showGrid = showGrid
+        self.board_width = board_width
+        self.board_height = board_height
+        self.show_grid = show_grid
 
         self.pack()
         self.create_content()
@@ -23,146 +23,146 @@ class Application(tk.Frame):
 
     def create_content(self):
         # Board
-        self.canvas = tk.Canvas(self, width=self.boardWidth, height=self.boardHeight, bg='white', bd=4, relief="ridge")
+        self.canvas = tk.Canvas(self, width=self.board_width, height=self.board_height, bg='white', bd=4, relief="ridge")
 
         # Logs
         # Frame
         self.logs=tk.Frame(self, width=100, height=500)
 
         # Logs title
-        logTitle = tk.Label(self.logs, text="LOGS", width=50)
+        log_title = tk.Label(self.logs, text="LOGS", width=50)
 		
 		# Scroll bar
         scroll=tk.Scrollbar(self.logs)
 
         # Logs text
-        self.logText=tk.Text(self.logs, height=self.boardHeight//15)  # 15 is the default size of fonts
-        self.logText.configure(yscrollcommand=scroll.set)
-        self.logText.configure(state="disabled")
+        self.log_text=tk.Text(self.logs, height=self.board_height//15)  # 15 is the default size of fonts
+        self.log_text.configure(yscrollcommand=scroll.set)
+        self.log_text.configure(state="disabled")
 		
 		# Pack everything
-        logTitle.pack(side="top")
+        log_title.pack(side="top")
         scroll.pack(side="right")
         self.canvas.pack(side="left")
-        self.logText.pack(side="left")
+        self.log_text.pack(side="left")
         self.logs.pack(side="top")
 
 
-    def updateLogs(self):
-        self.logText.configure(state="normal")
-        self.logText.insert("insert", "\n" + str(self.lastLog.get()))
-        self.logText.configure(state="disabled")
-        self.logText.pack()
+    def update_logs(self):
+        self.log_text.configure(state="normal")
+        self.log_text.insert("insert", "\n" + str(self.last_log.get()))
+        self.log_text.configure(state="disabled")
+        self.log_text.pack()
         self.logs.pack()
 
 
-    def drawBoard(self):
-        boardX = self.board.getSizeX()
-        boardY = self.board.getSizeY()
-        widthCase = self.boardWidth // boardX
-        heightCase = self.boardHeight // boardY
-        startX = (self.boardWidth % boardX) // 2 + 7
-        startY = (self.boardHeight % boardY) // 2 + 7
+    def draw_board(self):
+        board_x = self.board.size_X()
+        board_y = self.board.size_Y()
+        width_case = self.board_width // board_x
+        height_case = self.board_height // board_y
+        start_x = (self.board_width % board_x) // 2 + 7
+        start_y = (self.board_height % board_y) // 2 + 7
         margin = 5
 
         self.canvas.delete("all")
 
-        for x in range(boardX):
-            for y in range(boardY):
-                for elem in self.board.getCase(x, y):
+        for x in range(board_x):
+            for y in range(board_y):
+                for elem in self.board.get_case(x, y):
                     if elem == "LeftWall":
                         self.canvas.create_line(
-                            startX + x * widthCase, startY + y * heightCase,
-                            startX + x * widthCase, startY + y * heightCase + heightCase,
+                            start_x + x * width_case, start_y + y * height_case,
+                            start_x + x * width_case, start_y + y * height_case + height_case,
                             width=3,
                             tags="walls"
                         )
                     elif elem == "RightWall":
                         self.canvas.create_line(
-                            startX + x * widthCase + widthCase, startY + y * heightCase,
-                            startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
+                            start_x + x * width_case + width_case, start_y + y * height_case,
+                            start_x + x * width_case + width_case, start_y + y * height_case + height_case,
                             width=3,
                             tags="walls"
                         )
                     elif elem == "UpWall":
                         self.canvas.create_line(
-                            startX + x * widthCase, startY + y * heightCase,
-                            startX + x * widthCase  + widthCase, startY + y * heightCase,
+                            start_x + x * width_case, start_y + y * height_case,
+                            start_x + x * width_case  + width_case, start_y + y * height_case,
                             width=3,
                             tags="walls"
                         )
                     elif elem == "DownWall":
                         self.canvas.create_line(
-                            startX + x * widthCase, startY + y * heightCase + heightCase,
-                            startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
+                            start_x + x * width_case, start_y + y * height_case + height_case,
+                            start_x + x * width_case + width_case, start_y + y * height_case + height_case,
                             width=3,
                             tags="walls"
                         )
                     elif elem == "Red":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             fill="red",
                             outline="red"
                         )
                     elif elem == "Blue":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             fill="blue",
                             outline="blue"
                         )
                     elif elem == "Green":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             fill="green",
                             outline="green"
                         )
                     elif elem == "Yellow":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             fill="yellow",
                             outline="yellow"
                         )
                     elif elem == "RedWin":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             outline="red"
                         )
                     elif elem == "BlueWin":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             outline="blue"
                         )
                     elif elem == "GreenWin":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             outline="green"
                         )
                     elif elem == "YellowWin":
                         self.canvas.create_oval(
-                            startX + x * widthCase + margin, startY + y * heightCase + margin,
-                            startX + x * widthCase + widthCase - margin, startY + y * heightCase + heightCase - margin,
+                            start_x + x * width_case + margin, start_y + y * height_case + margin,
+                            start_x + x * width_case + width_case - margin, start_y + y * height_case + height_case - margin,
                             width=3,
                             outline="yellow"
                         )
 
-                if self.showGrid :
+                if self.show_grid :
                     self.canvas.create_rectangle(
-                        startX + x * widthCase, startY + y * heightCase,
-                        startX + x * widthCase + widthCase, startY + y * heightCase + heightCase,
+                        start_x + x * width_case, start_y + y * height_case,
+                        start_x + x * width_case + width_case, start_y + y * height_case + height_case,
                         width=1,
                         outline="grey",
                         tags="grid"
@@ -171,8 +171,8 @@ class Application(tk.Frame):
     
 
     def update(self, *args):
-        self.updateLogs()
-        self.drawBoard()
+        self.update_logs()
+        self.draw_board()
         self.canvas.pack()
-        self.logText.pack()
+        self.log_text.pack()
         self.logs.pack()

@@ -2,30 +2,30 @@ import numpy as np
 
 class Board :
 
-    def __init__(self, xDim, yDim):
-        self.grid = np.zeros((yDim, xDim))
+    def __init__(self, dim_x, dim_y):
+        self.grid = np.zeros((dim_y, dim_x))
 
 
-    def loadGrid(self, gridFile):
+    def load_grid(self, grid_file):
         """
         Load the board grid from a csv
             :param self: The board itself
-            :param gridFile: The csv which contains a grid
+            :param grid_file: The csv which contains a grid
         """
-        with open(gridFile, "rb") as grid:
+        with open(grid_file, "rb") as grid:
             self.grid = np.loadtxt(grid, delimiter=",")
 
 
-    def saveGrid(self, gridFile):
+    def save_grid(self, grid_file):
         """
         Save the board grid from a csv
             :param self: The board itself
-            :param gridFile: The csv which will contain a grid
+            :param grid_file: The csv which will contain a grid
         """   
-        np.savetxt(gridFile, self.grid, delimiter=",")
+        np.savetxt(grid_file, self.grid, delimiter=",")
 
 
-    def getCase(self, x, y):
+    def get_case(self, x, y):
         """
         Get a case of a board at a position (x, y)
             :param self: The board itself
@@ -36,7 +36,7 @@ class Board :
         return self.grid[y, x]
 
 
-    def setCase(self, x, y, value):
+    def set_case(self, x, y, value):
         """
         Set the value of a case 
             :param self: The board itself
@@ -47,7 +47,7 @@ class Board :
         self.grid[y, x] = value
 
 
-    def setgrid(self, grid):
+    def set_grid(self, grid):
         """
         Set the grid
             :param self: The board itself
@@ -56,16 +56,16 @@ class Board :
         self.grid = grid
 
 
-    def toMat(self):
+    def to_mat(self):
         """
-        Get the grid
+        Get the grid in a matrix (numpy array)
             :param self: The board itself
             :return: The matrix grid
         """
         return self.grid
 
 
-    def getSizeX(self):
+    def size_X(self):
         """
         Get the horizontal size of the board
             :param self: The board itself
@@ -73,7 +73,7 @@ class Board :
         return self.grid.shape[1]
 
 
-    def getSizeY(self):
+    def size_Y(self):
         """
         Get the vertical size of the board
             :param self: The board itself
@@ -81,9 +81,9 @@ class Board :
         return self.grid.shape[0]
 
 
-    def toVec(self):
+    def to_vec(self):
         """
-        docstring here
+        Transform the board to a vector
             :param self: The board itself
             :return: A vector transformation of the board
         """   
@@ -101,7 +101,7 @@ class Board :
         res = ""
         for line in self.grid:
             for i, nb in enumerate(line):
-                res += f"{nb}," if i < self.getSizeX() - 1 else str(nb)
+                res += f"{nb}," if i < self.size_X() - 1 else str(nb)
             res += "\n"
         return res
 

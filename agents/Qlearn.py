@@ -23,37 +23,37 @@ class Qlearn:
         if self.exploration_rate > rd.random():
             action = rd.choice(state.listActions())
         else:
-            _, action = self.maxQ(state)
+            _, action = self.max_q(state)
         return action
 
-    def maxQ(self, state):
-        bestVal = - np.inf
-        bestAction = ""
-        for newAction in state.listActions():
-            tempPos = state.copy()
-            tempPos.doAction(newAction)
-            if tempPos in self.q_table.keys():
-                q_value = max(self.q_table[tempPos].values())
+    def max_q(self, state):
+        best_val = - np.inf
+        best_action = ""
+        for new_action in state.listActions():
+            temp_pos = state.copy()
+            temp_pos.do_action(new_action)
+            if temp_pos in self.q_table.keys():
+                q_value = max(self.q_table[temp_pos].values())
             else:
                 q_value = 0
-                self.q_table[tempPos] = {action: 0 for action in state.listActions()}
-            if q_value > bestVal or (q_value == bestVal and rd.random() >= 0.5):
-                bestVal = q_value
-                bestAction = newAction
-        return bestVal, bestAction
+                self.q_table[temp_pos] = {action: 0 for action in state.listActions()}
+            if q_value > best_val or (q_value == best_val and rd.random() >= 0.5):
+                best_val = q_value
+                best_action = new_action
+        return best_val, best_action
 
-    def updateExplorationRate(self):
+    def update_exploration(self):
         self.exploration_rate *= self.exploration_decay
         self.exploration_rate = max(self.exploration_min, self.exploration_rate)
 
     def learn(self, state, action):
         state2 = state.copy()
-        state2.doAction(action)
-        bestNextVal, _ = self.maxQ(state2)
+        state2.do_action(action)
+        best_next_val, _ = self.max_q(state2)
         if state != state2:
-            learned_value = state2.reward() + self.discount_factor * bestNextVal
+            learned_value = state2.reward() + self.discount_factor * best_next_val
         else:
-            learned_value = -0.5 + self.discount_factor * bestNextVal
+            learned_value = -0.5 + self.discount_factor * best_next_val
 
         if state not in self.q_table:
             self.q_table[state] = {action: 0 for action in state.listActions()}
@@ -61,11 +61,11 @@ class Qlearn:
         self.q_table[state][action] *= (1 - self.learning_rate)
         self.q_table[state][action] += self.learning_rate * learned_value
 
-    def updateState(self, state, learning=True):
+    def update_state(self, state, learning=True):
         action = self.choose_action(state)
         if learning:
             self.learn(state, action)
-        state.doAction(action)
+        state.do_action(action)
         return action
 
     def save_model(self, filename):

@@ -4,10 +4,10 @@ from tkinter import mainloop
 import argparse
 import _thread
 # from matplotlib import pyplot as plt
-from ricochet_robot.GUI.GUI import Application
-from ricochet_robot.game.Ricochet import Ricochet
-from agents.DQN import DQN
-from agents.Qlearn import Qlearn
+from ricochet_robot.gui.gui import Application
+from ricochet_robot.game.ricochet import Ricochet
+from agents.dqn import DQN
+from agents.qlearn import Qlearn
 from ricochet_robot.interface.interface_ricochet import InterfaceRicochet
 
 SEQUENCE = [
@@ -25,7 +25,7 @@ SEQUENCE = [
 ]
 
 def _model_act(app, model, *grids, nb_episode=500, nb_step=20, max_moves=50, output_path=None, learning=False):
-    app.lastLog.set("Start !")
+    app.last_log.set("Start !")
 
     # Pas sûr que le choix aléatoire des grilles soit le plus pertinent
     rico = InterfaceRicochet(grids[0], app=app, not_end_score=-0.05)
@@ -35,54 +35,54 @@ def _model_act(app, model, *grids, nb_episode=500, nb_step=20, max_moves=50, out
         rico.grid_file = grid
         rico.reset()
         rico.render()
-        app.lastLog.set(f"{grid} loaded !")
+        app.last_log.set(f"{grid} loaded !")
 
-        app.lastLog.set(f"Starting episode {ep+1}")
-        app.lastLog.set(f"Learning ...")
+        app.last_log.set(f"Starting episode {ep+1}")
+        app.last_log.set(f"Learning ...")
         for step in range(nb_step):
-            app.lastLog.set(f"Step {step+1}")
+            app.last_log.set(f"Step {step+1}")
             rico.reset()
 
             for moves in range(max_moves):
-                action = model.updateState(rico, learning=learning)
+                action = model.update_state(rico, learning=learning)
                 if rico.reward() == 1:
-                    app.lastLog.set(f"Win in {moves} movements")
+                    app.last_log.set(f"Win in {moves} movements")
                     break
 
-        app.lastLog.set(f"Result episode {ep+1}")
+        app.last_log.set(f"Result episode {ep+1}")
         eps = model.exploration_rate
         model.exploration_rate = model.exploration_min
         for _ in range(max_moves):
-            action = model.updateState(rico, learning=False)
+            action = model.update_state(rico, learning=False)
             rico.render()
-            app.lastLog.set(f"Action : {rico.readable_translation(action)}")
+            app.last_log.set(f"Action : {rico.readable_translation(action)}")
             time.sleep(0.2)
             if rico.reward() == 1:
-                app.lastLog.set(f"Win in {moves} movements")
+                app.last_log.set(f"Win in {moves} movements")
                 break
         model.exploration_rate = eps
 
         if output_path:
             model.save_model(output_path)
-            app.lastLog.set("Model saved!")
+            app.last_log.set("Model saved!")
 
-    app.lastLog.set("The end")
+    app.last_log.set("The end")
 
 
 def show(args):
     grid = args.grid
     rico = Ricochet()
-    rico.grid.loadGrid(grid)
-    app = Application(board=rico.grid, showGrid=True)
-    app.lastLog.set(f"{grid} loaded !")
+    rico.grid.load_grid(grid)
+    app = Application(board=rico.grid, show_grid=True)
+    app.last_log.set(f"{grid} loaded !")
     app.mainloop()
 
 
 def learn(args):
     grid = args.grids[0]
     rico = Ricochet()
-    rico.grid.loadGrid(grid)
-    app = Application(board=rico.grid, showGrid=True)
+    rico.grid.load_grid(grid)
+    app = Application(board=rico.grid, show_grid=True)
     if args.deep:
         model = DQN((16, 16), 16)
     else:
@@ -101,8 +101,8 @@ def learn(args):
 def play(args): # grid, model
     grid = args.grids[0]
     rico = Ricochet()
-    rico.grid.loadGrid(grid)
-    app = Application(board=rico.grid, showGrid=True)
+    rico.grid.load_grid(grid)
+    app = Application(board=rico.grid, show_grid=True)
     if args.deep:
         model = DQN((16, 16), 16, exploration_rate=0, exploration_decay=0, exploration_min=0)
     else:
@@ -118,21 +118,21 @@ def play(args): # grid, model
 
 def demo(args):
     def actions(rico, app):
-        app.lastLog.set("Start !")
+        app.last_log.set("Start !")
         for step in SEQUENCE:
             print(rico.grid)
             time.sleep(1)
             rico.move(*step)
             print(rico.grid)
             app.board = rico.grid
-            app.lastLog.set(f"{step[0]} : {step[1]}")
-            app.lastLog.set(f"Win ? {rico.isWin()}")
-        app.lastLog.set("The end")
-        # rico.grid.saveGrid("grids/...")
+            app.last_log.set(f"{step[0]} : {step[1]}")
+            app.last_log.set(f"Win ? {rico.is_win()}")
+        app.last_log.set("The end")
+        # rico.grid.save_grid("grids/...")
 
     rico = Ricochet()
-    rico.grid.loadGrid("grids/grid1.csv")
-    app = Application(board=rico.grid, showGrid=True)
+    rico.grid.load_grid("grids/grid1.csv")
+    app = Application(board=rico.grid, show_grid=True)
 
     _thread.start_new_thread( actions, (rico, app) )
     app.mainloop()

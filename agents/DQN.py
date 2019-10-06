@@ -2,7 +2,7 @@ from collections import deque
 import time
 import random as rd
 import numpy as np
-from agents.Qlearn import Qlearn
+from agents.qlearn import Qlearn
 import keras
 from keras.callbacks import TensorBoard
 from keras.layers import Dense, Flatten, Conv2D, Reshape, Input, MaxPool2D, Conv1D, MaxPool1D
@@ -59,7 +59,7 @@ class DQN(Qlearn):
 
     def remember(self, state, action):
         next_state = state.copy()
-        next_state.doAction(action)
+        next_state.do_action(action)
         reward = next_state.reward()
         done = next_state.is_terminal()
         self.memory.append((state, action, reward, next_state, done))
@@ -81,12 +81,12 @@ class DQN(Qlearn):
                     global graph
                     with graph.as_default():
                         q_update += self.discount_factor * np.amax(
-                            self.model.predict(self._add_dim(state_next.tomat()))[0]
+                            self.model.predict(self._add_dim(state_next.to_mat()))[0]
                         )
 
-                q_values = self.model.predict(self._add_dim(state_next.tomat()))
+                q_values = self.model.predict(self._add_dim(state_next.to_mat()))
                 q_values[0][state.listActions().index(action)] = q_update
-                positions.append(state_next.tomat())
+                positions.append(state_next.to_mat())
                 targets.append(q_values.tolist()[0])
 
             with graph.as_default():
@@ -95,30 +95,30 @@ class DQN(Qlearn):
                     batch_size=self.batch_size, epochs=self.epochs, verbose=self.verbose,
                     callbacks=[self.tb]
                 )
-            self.updateExplorationRate()
+            self.update_exploration()
 
-    def maxQ(self, state):
-        bestVal = - np.inf
-        bestAction = ""
-        for newActions in state.listActions():
-            tempPos = state.copy()
-            tempPos.doAction(newActions)
+    def max_q(self, state):
+        best_val = - np.inf
+        best_action = ""
+        for new_actions in state.listActions():
+            temp_pos = state.copy()
+            temp_pos.do_action(new_actions)
             global graph
             with graph.as_default():
-                q_value = np.max(self.model.predict(self._add_dim(tempPos.tomat())))
+                q_value = np.max(self.model.predict(self._add_dim(temp_pos.to_mat())))
 
-            if q_value > bestVal :
-                bestVal = q_value
-                bestAction = newActions
+            if q_value > best_val :
+                best_val = q_value
+                best_action = new_actions
 
-        return bestVal, bestAction
+        return best_val, best_action
 
     def _add_dim(self, mat):
         mat2 = np.zeros((1, *self.state_size))
         mat2[0, :, :] = mat
         return mat2
 
-    def updateState(self, state, learning=True):
+    def update_state(self, state, learning=True):
         action = self.choose_action(state)
         if learning:
             self.remember(state, action)
@@ -129,7 +129,7 @@ class DQN(Qlearn):
             else:
                 self.last_update += 1
 
-        state.doAction(action)
+        state.do_action(action)
         return action
 
     def save_model(self, filename):

@@ -1,6 +1,6 @@
 import tempfile
 import os
-from ricochet_robot.game.Ricochet import Ricochet
+from ricochet_robot.game.ricochet import Ricochet
 import gym
 import numpy as np
 
@@ -32,12 +32,12 @@ class InterfaceRicochet(gym.Env):
         self.not_end_score = not_end_score
 
     def step(self, action):
-        self.doAction(action)
-        state = self.ricochet.grid.toMat()
-        return state, self.reward(), self.ricochet.isWin()
+        self.do_action(action)
+        state = self.ricochet.grid.to_mat()
+        return state, self.reward(), self.ricochet.is_win()
 
     def reset(self):
-        self.ricochet.grid.loadGrid(self.grid_file)
+        self.ricochet.grid.load_grid(self.grid_file)
 
     def render(self):
         if self.app:
@@ -60,16 +60,16 @@ class InterfaceRicochet(gym.Env):
     def readable_translation(cls, action):
         return f"{cls.action_meaning[action][0]} moves {cls.action_meaning[action][1]}"
     
-    def doAction(self, action):
+    def do_action(self, action):
         self.ricochet.move(*self.translation(action))
 
     def reward(self):
-        return 1 if self.ricochet.isWin() else self.not_end_score
+        return 1 if self.ricochet.is_win() else self.not_end_score
 
     def _save_temp(self):
         fd, file_name = tempfile.mkstemp(suffix=".csv", prefix="grid")
         # print(self.ricochet.grid)
-        self.ricochet.grid.saveGrid(file_name)
+        self.ricochet.grid.save_grid(file_name)
         # with open(file_name, "r") as csv:
         #     print(csv.read())
         os.close(fd)
@@ -82,7 +82,7 @@ class InterfaceRicochet(gym.Env):
         os.remove(file_name)
         return res
 
-    def tomat(self):
+    def to_mat(self):
         return self.ricochet.grid.grid
 
     def __hash__(self):

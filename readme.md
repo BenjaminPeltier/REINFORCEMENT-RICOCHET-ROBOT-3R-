@@ -86,7 +86,7 @@ Voici la liste des codes associés à chaque élément :
 
 ### Exemple de grille
 
-Voici donc un exmple de grille :
+Voici donc un exemple de grille :
 
 ```csv
 5,4,4,6,4,4,4,4,6,4,4,4,4,4,4,6
