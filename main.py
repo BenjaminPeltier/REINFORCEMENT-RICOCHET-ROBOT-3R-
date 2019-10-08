@@ -23,7 +23,7 @@ SEQUENCE = [
     ("Red", "right"),
 ]
 
-def _model_act(app, model, *grids, nb_episode=500, nb_step=20, max_moves=50, output_path=None, learning=False):
+def _model_act(app, model, *grids, nb_episode=500, nb_step=100, max_moves=256, output_path=None, learning=False):
     app.last_log.set("Start !")
 
     # Pas sûr que le choix aléatoire des grilles soit le plus pertinent
