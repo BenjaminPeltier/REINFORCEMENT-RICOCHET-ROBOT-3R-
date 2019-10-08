@@ -21,7 +21,7 @@ Pour utiliser le programme, vous aurez besoin de quelques pré-requis :
 ## Installation
 
 ```bash
-pip3 -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Utilisation
