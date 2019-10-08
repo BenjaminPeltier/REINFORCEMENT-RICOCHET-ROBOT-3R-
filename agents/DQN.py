@@ -14,7 +14,7 @@ import tensorflow as tf
 graph = tf.get_default_graph()
 class DQN(Qlearn):
 
-    def __init__(self, state_size, action_size, model_path=None, name=None, learning_rate=0.001, discount_factor=0.009, exploration_rate=0.95, exploration_decay=0.99, exploration_min=0.01, epochs=10, batch_size=256, memory_size=1024, fixed_period=512, verbose=0):
+    def __init__(self, state_size, action_size, model_path=None, name=None, learning_rate=0.001, discount_factor=0.009, exploration_rate=0.95, exploration_decay=0.99, exploration_min=0.01, epochs=10, batch_size=256, memory_size=1024, fixed_period=512, plotting=False, verbose=0):
         super().__init__(
             learning_rate=learning_rate,
             discount_factor=discount_factor,
@@ -36,10 +36,10 @@ class DQN(Qlearn):
             write_images=False, embeddings_freq=0, embeddings_layer_names=None,
             embeddings_metadata=None, embeddings_data=None, update_freq='batch'
         )
-        self.model = self._build_model() if not model_path else self.load_model(model_path)
+        self.model = self._build_model(plotting) if not model_path else self.load_model(model_path)
         self.verbose = verbose
 
-    def _build_model(self):
+    def _build_model(self, plotting=False):
         global graph
         with graph.as_default():
             model = Sequential()
@@ -54,7 +54,8 @@ class DQN(Qlearn):
             model.add(Dense(self.action_size, activation='softmax'))
             model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
             model.summary()
-            plot_model(model, to_file='model.png', show_shapes=True)
+            if plotting:
+                plot_model(model, to_file="out/model.png", show_shapes=True)
             return model
 
     def remember(self, state, action):
