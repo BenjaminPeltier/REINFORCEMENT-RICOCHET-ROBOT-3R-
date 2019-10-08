@@ -3,7 +3,6 @@ import random as rd
 from tkinter import mainloop
 import argparse
 import _thread
-# from matplotlib import pyplot as plt
 from ricochet_robot.gui.gui import Application
 from ricochet_robot.game.ricochet import Ricochet
 from agents.dqn import DQN
