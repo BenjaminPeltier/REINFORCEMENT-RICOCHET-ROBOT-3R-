@@ -19,11 +19,20 @@ Pour utiliser le programme, vous aurez besoin de quelques pré-requis :
 
 * Avoir python3 avec tkinter installé.
 * Avoir pip3 installé.
+* Optionnel : avoir pipenv d'installer
 
 ## Installation
 
+Sans pipenv
+
 ```bash
 pip3 install -r requirements.txt
+```
+
+Avec pipenv
+
+```bash
+pipenv install
 ```
 
 ## Utilisation
