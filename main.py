@@ -23,10 +23,9 @@ SEQUENCE = [
     ("Red", "right"),
 ]
 
-def _model_act(app, model, *grids, nb_episode=500, nb_step=100, max_moves=256, output_path=None, learning=False):
+def _model_act(app, model, *grids, nb_episode=50, nb_step=100, max_moves=256, output_path=None, learning=False):
     app.last_log.set("Start !")
 
-    # Pas sûr que le choix aléatoire des grilles soit le plus pertinent
     rico = InterfaceRicochet(grids[0], app=app, not_end_score=-0.05)
     
     for ep in range(nb_episode):
@@ -97,7 +96,7 @@ def learn(args):
     app.mainloop()
 
 
-def play(args): # grid, model
+def play(args):
     grid = args.grids[0]
     rico = Ricochet()
     rico.grid.load_grid(grid)
@@ -127,7 +126,6 @@ def demo(args):
             app.last_log.set(f"{step[0]} : {step[1]}")
             app.last_log.set(f"Win ? {rico.is_win()}")
         app.last_log.set("The end")
-        # rico.grid.save_grid("grids/...")
 
     rico = Ricochet()
     rico.grid.load_grid("grids/grid1.csv")
