@@ -1,5 +1,7 @@
 # REINFORCEMENT RICOCHET ROBOT (3R)
 
+![Screenshot du programme](images/screenshot.png)
+
 Ce projet tente d'utiliser l'apprentissage par renforcement pour résoudre des grilles de ricochet robot.
 Les méthodes d'apprentissage par renforcement utilisées sont le qlearning et le deep qlearning.
 
