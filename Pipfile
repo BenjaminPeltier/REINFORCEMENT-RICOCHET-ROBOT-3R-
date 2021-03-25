@@ -46,7 +46,7 @@ Keras-Preprocessing = "==1.1.0"
 Markdown = "==3.1.1"
 prompt_toolkit = "==2.0.10"
 Pygments = "==2.4.2"
-PyYAML = "==5.1.2"
+PyYAML = "==5.4"
 Werkzeug = "==0.16.0"
 
 [requires]
